@@ -333,9 +333,6 @@ async def successful_payment(message: Message) -> None:
         from bot.handlers.user import _do_reissue
         user = await crud.get_user(user_id)
         if user:
-        from bot.handlers.user import _do_reissue
-        user = await crud.get_user(user_id)
-        if user:
             await _do_reissue(message, user_id, user.vpn_name)
         await message.answer("✅ Оплата Stars прошла успешно!\nКлюч перевыпущен.")
     elif is_gift:
