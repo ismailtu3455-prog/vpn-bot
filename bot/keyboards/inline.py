@@ -133,7 +133,8 @@ def plans_kb(
             text=f"📦 {plan.title} — {plan.price:.0f}₽",
             callback_data=f"{prefix}:{plan.id}",
         ))
-    builder.row(InlineKeyboardButton(text="🎁 Купить в подарок", callback_data="buy_gift"))
+    if prefix == "plan":
+        builder.row(InlineKeyboardButton(text="🎁 Купить в подарок", callback_data="buy_gift"))
     builder.row(InlineKeyboardButton(text="⬅️ Назад", callback_data="back"))
     return builder.as_markup()
 
