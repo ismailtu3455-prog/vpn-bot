@@ -766,6 +766,11 @@ async def create_gift_card(buyer_user_id: int, days: int) -> GiftCard:
         return gc
 
 
+async def get_gift_card(code: str) -> GiftCard | None:
+    async with AsyncSessionLocal() as session:
+        return await session.get(GiftCard, code.upper())
+
+
 async def use_gift_card(code: str, user_id: int) -> GiftCard | None:
     async with AsyncSessionLocal() as session:
         gc = await session.get(GiftCard, code.upper())
