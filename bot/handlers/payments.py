@@ -333,6 +333,9 @@ async def successful_payment(message: Message) -> None:
         from bot.handlers.user import _do_reissue
         user = await crud.get_user(user_id)
         if user:
+        from bot.handlers.user import _do_reissue
+        user = await crud.get_user(user_id)
+        if user:
             await _do_reissue(message, user_id, user.vpn_name)
         await message.answer("✅ Оплата Stars прошла успешно!\nКлюч перевыпущен.")
     elif is_gift:
@@ -372,7 +375,7 @@ async def _process_tome_payment(call: CallbackQuery, plan_id: str, is_gift: bool
         return
     tome_phone = db_settings.get("tome_phone") or "не настроен"
     tome_bank = db_settings.get("tome_bank") or ""
-    invoice_id = f"tome_{uuid.uuid4().hex[:10]}"
+    invoice_id = f"sbp_{uuid.uuid4().hex[:10]}"
     await crud.create_invoice(
         user_id=call.from_user.id,
         plan_key=plan.id,
@@ -383,22 +386,6 @@ async def _process_tome_payment(call: CallbackQuery, plan_id: str, is_gift: bool
         invoice_id=invoice_id,
         is_gift=is_gift,
     )
-    # Notify payment channel
-    pay_ch = db_settings.get("payment_channel_id")
-    if pay_ch:
-        try:
-            from aiogram.types import InlineKeyboardButton
-            from aiogram.utils.keyboard import InlineKeyboardBuilder
-            kb = InlineKeyboardBuilder()
-            kb.row(InlineKeyboardButton(
-                text=f"✅ Подтвердить #{invoice_id}",
-                callback_data=f"adm:inv_approve_by_ext:{invoice_id}",
-            ))
-            await call.bot.send_message(
-                int(pay_ch),
-                f"💳 <b>Новый платёж (СБП)</b>\n\n"
-                f"👤 {call.from_user.id}\n"
-                f"📦 {'Подарок: ' if is_gift else ''}{plan.title}\n"
                 f"💰 {plan.price}₽\n"
                 f"🔑 {invoice_id}",
                 reply_markup=kb.as_markup(),

@@ -46,7 +46,7 @@ def reissue_payment_methods_kb(balance: float, cost: float, db_settings: dict, i
         builder.row(InlineKeyboardButton(text="🟢 СБП (Lava.ru)", callback_data=f"pay:lava:reissue"))
 
     if db_settings.get("tome_enabled", "0") == "1":
-        builder.row(InlineKeyboardButton(text="📱 СБП (tome)", callback_data=f"pay:tome:reissue"))
+        builder.row(InlineKeyboardButton(text="📱 СБП (вручную)", callback_data=f"pay:tome:reissue"))
 
     builder.row(InlineKeyboardButton(text="⬅️ Назад", callback_data="my"))
     return builder.as_markup()
@@ -202,7 +202,7 @@ def payment_methods_kb(
     tome_enabled = db_settings.get("tome_enabled", "0") == "1"
     if tome_enabled:
         builder.row(InlineKeyboardButton(
-            text="📱 СБП (вручную)",
+            text="📱 СБП",
             callback_data=f"{prefix}:tome:{plan_id}",
         ))
 
