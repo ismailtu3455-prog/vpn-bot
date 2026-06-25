@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Secrets
+.env
+
+# Database
+*.db
+bot.db
+sqlite.db
+
+# Logs
+*.log
+bot_stderr.log
+bot_stdout.log
+mock_vpn_stderr.log
+mock_vpn_stdout.log
+
+# IDEs
+.idea/
+.vscode/
+
+# Project specifics
+mock_vpn_data.json
