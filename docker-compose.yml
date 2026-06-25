@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: vpn-bot
+    restart: always
+    ports:
+      - "25737:25737"
+    volumes:
+      - ./.env:/app/.env
+      - ./bot.db:/app/bot.db
