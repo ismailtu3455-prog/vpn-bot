@@ -769,7 +769,7 @@ async def create_gift_card(buyer_user_id: int, days: int) -> GiftCard:
 async def use_gift_card(code: str, user_id: int) -> GiftCard | None:
     async with AsyncSessionLocal() as session:
         gc = await session.get(GiftCard, code.upper())
-        if gc and not gc.is_used and gc.buyer_user_id != user_id:
+        if gc and not gc.is_used:
             gc.is_used = True
             gc.used_by_user_id = user_id
             gc.used_at = datetime.utcnow()
