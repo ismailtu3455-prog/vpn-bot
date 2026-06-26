@@ -17,7 +17,7 @@ class AdminPaymentState(StatesGroup):
     wait_for_crypto_token = State()
     wait_for_yoomoney_wallet = State()
     wait_for_yoomoney_secret = State()
-    wait_for_lava_creds = State()
+    wait_for_platega_creds = State()
     wait_for_tome_phone = State()
     wait_for_tome_bank = State()
 
