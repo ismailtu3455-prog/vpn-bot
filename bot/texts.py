@@ -88,7 +88,9 @@ class Texts:
     NO_VPN = (
         "❌ <b>VPN не найден</b>\n\n"
         "У вас ещё нет активной подписки.\n"
-        "Перейдите в раздел <b>«Купить VPN»</b> для оформления."
+        "Перейдите в раздел <b>«Купить VPN»</b> для оформления.\n\n"
+        "📄 <a href='https://telegra.ph/Politika-konfidencialnosti-06-21-31'>Политика конфиденциальности: Открыть</a>\n"
+        "📜 <a href='https://telegra.ph/Polzovatelskoe-soglashenie-04-01-19'>Пользовательское соглашение: Открыть</a>"
     )
 
     VPN_EXPIRED = (
