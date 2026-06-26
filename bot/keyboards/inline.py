@@ -42,8 +42,8 @@ def reissue_payment_methods_kb(balance: float, cost: float, db_settings: dict, i
     if db_settings.get("yoomoney_wallet"):
         builder.row(InlineKeyboardButton(text="💛 YooMoney", callback_data=f"pay:yoomoney:reissue"))
 
-    if db_settings.get("lava_shop_id") and db_settings.get("lava_api_key"):
-        builder.row(InlineKeyboardButton(text="🟢 СБП (Lava.ru)", callback_data=f"pay:lava:reissue"))
+    if db_settings.get("platega_shop_id") and db_settings.get("platega_api_key"):
+        builder.row(InlineKeyboardButton(text="🟢 СБП", callback_data=f"pay:platega:reissue"))
 
     if db_settings.get("tome_enabled", "0") == "1":
         builder.row(InlineKeyboardButton(text="📱 СБП (вручную)", callback_data=f"pay:tome:reissue"))
@@ -190,19 +190,19 @@ def payment_methods_kb(
             callback_data=f"{prefix}:yoomoney:{plan_id}",
         ))
 
-    # Lava СБП
-    lava_shop = db_settings.get("lava_shop_id")
-    if lava_shop:
+    # Platega СБП
+    platega_shop = db_settings.get("platega_shop_id")
+    if platega_shop:
         builder.row(InlineKeyboardButton(
-            text="🟢 СБП (Lava)",
-            callback_data=f"{prefix}:lava:{plan_id}",
+            text="🟢 СБП",
+            callback_data=f"{prefix}:platega:{plan_id}",
         ))
 
     # Tome (manual)
     tome_enabled = db_settings.get("tome_enabled", "0") == "1"
     if tome_enabled:
         builder.row(InlineKeyboardButton(
-            text="📱 СБП",
+            text="📱 СБП (вручную)",
             callback_data=f"{prefix}:tome:{plan_id}",
         ))
 
@@ -347,7 +347,7 @@ def admin_payments_kb(db_s: dict) -> InlineKeyboardMarkup:
     crypto_token = db_s.get("crypto_pay_token")
     stars_on = db_s.get("stars_enabled", "1") == "1"
     ym_wallet = db_s.get("yoomoney_wallet")
-    lava_shop = db_s.get("lava_shop_id")
+    platega_shop = db_s.get("platega_shop_id")
     tome_on = db_s.get("tome_enabled", "0") == "1"
     balance_on = db_s.get("balance_pay_enabled", "1") == "1"
 
@@ -365,8 +365,8 @@ def admin_payments_kb(db_s: dict) -> InlineKeyboardMarkup:
         callback_data="adm:pay_setup:yoomoney",
     ))
     builder.row(InlineKeyboardButton(
-        text=f"🟢 Lava СБП: {'✅ ' + str(lava_shop)[:8] + '...' if lava_shop else '❌'}",
-        callback_data="adm:pay_setup:lava",
+        text=f"🟢 Platega СБП: {'✅ ' + str(platega_shop)[:8] + '...' if platega_shop else '❌'}",
+        callback_data="adm:pay_setup:platega",
     ))
     builder.row(InlineKeyboardButton(
         text=f"📱 СБП (tome): {'✅' if tome_on else '❌'}",

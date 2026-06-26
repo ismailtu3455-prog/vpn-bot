@@ -409,12 +409,12 @@ async def process_yoomoney_creds(message: Message, state: FSMContext) -> None:
     await message.answer(f"✅ YooMoney настроен. Кошелёк: {wallet}")
 
 
-@router.callback_query(F.data == "adm:pay_setup:lava")
-async def adm_pay_lava(call: CallbackQuery, state: FSMContext) -> None:
-    await state.set_state(AdminPaymentState.wait_for_lava_creds)
-    shop = db_settings.get("lava_shop_id") or "не задан"
+@router.callback_query(F.data == "adm:pay_setup:platega")
+async def adm_pay_platega(call: CallbackQuery, state: FSMContext) -> None:
+    await state.set_state(AdminPaymentState.wait_for_platega_creds)
+    shop = db_settings.get("platega_shop_id") or "не задан"
     await call.message.edit_text(
-        f"🟢 <b>Lava.ru СБП настройки</b>\n\n"
+        f"🟢 <b>Platega.ru СБП настройки</b>\n\n"
         f"Shop ID: <code>{shop}</code>\n\n"
         f"Введите через пробел: <code>shop_id api_key</code>\n"
         f"Или 'disable' для отключения:"
@@ -422,23 +422,23 @@ async def adm_pay_lava(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer()
 
 
-@router.message(AdminPaymentState.wait_for_lava_creds)
-async def process_lava_creds(message: Message, state: FSMContext) -> None:
+@router.message(AdminPaymentState.wait_for_platega_creds)
+async def process_platega_creds(message: Message, state: FSMContext) -> None:
     await state.clear()
     text = message.text.strip()
     if text.lower() == "disable":
-        await crud.set_setting("lava_shop_id", None)
-        await crud.set_setting("lava_api_key", None)
-        await message.answer("🟢 Lava.ru отключён")
+        await crud.set_setting("platega_shop_id", None)
+        await crud.set_setting("platega_api_key", None)
+        await message.answer("🟢 Platega.ru отключён")
         return
     parts = text.split()
     if len(parts) != 2:
         await message.answer("❌ Введите: shop_id api_key (через пробел)")
         return
     shop_id, api_key = parts
-    await crud.set_setting("lava_shop_id", shop_id)
-    await crud.set_setting("lava_api_key", api_key)
-    await message.answer(f"✅ Lava.ru настроен. Shop ID: {shop_id}")
+    await crud.set_setting("platega_shop_id", shop_id)
+    await crud.set_setting("platega_api_key", api_key)
+    await message.answer(f"✅ Platega.ru настроен. Shop ID: {shop_id}")
 
 
 @router.callback_query(F.data == "adm:pay_setup:tome")

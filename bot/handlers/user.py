@@ -221,7 +221,9 @@ async def cb_my(call: CallbackQuery) -> None:
             f"📅 Истекает: <b>{expires_at}</b>\n"
             f"{traffic_line}{ban_line}\n\n"
             f"💰 Баланс: <b>{user.balance:.2f}₽</b>\n\n"
-            f"🔗 Ссылка-подписка:\n<code>{sub_url}</code>"
+            f"🔗 Ссылка-подписка:\n<code>{sub_url}</code>\n\n"
+            f"📄 <a href='https://telegra.ph/Politika-konfidencialnosti-06-21-31'>Политика конфиденциальности: Открыть</a>\n"
+            f"📜 <a href='https://telegra.ph/Polzovatelskoe-soglashenie-04-01-19'>Пользовательское соглашение: Открыть</a>"
         )
         await call.message.edit_text(
             text,
@@ -233,8 +235,10 @@ async def cb_my(call: CallbackQuery) -> None:
         await call.message.edit_text(
             f"👤 <b>Мой VPN</b>\n\n"
             f"🔑 Профиль: <code>{user.vpn_name}</code>\n"
-            f"⚠️ Не удалось получить данные с сервера\n\n"
-            f"💰 Баланс: <b>{user.balance:.2f}₽</b>",
+            f"❌ Ошибка получения данных.\n\n"
+            f"💰 Баланс: <b>{user.balance:.2f}₽</b>\n\n"
+            f"📄 <a href='https://telegra.ph/Politika-konfidencialnosti-06-21-31'>Политика конфиденциальности: Открыть</a>\n"
+            f"📜 <a href='https://telegra.ph/Polzovatelskoe-soglashenie-04-01-19'>Пользовательское соглашение: Открыть</a>",
             reply_markup=client_kb(user.balance or 0.0),
             parse_mode="HTML",
         )

@@ -17,7 +17,7 @@ from bot.database import crud
 from bot.keyboards.inline import (
     back_kb, payment_methods_kb, invoice_kb, yoomoney_invoice_kb,
 )
-from bot.services import cryptopay, lava, yoomoney
+from bot.services import cryptopay, platega, yoomoney
 from bot.services.delivery import deliver_vpn
 from bot.states import UserState
 from bot.texts import Texts
@@ -493,35 +493,35 @@ async def _process_yoomoney_payment(call: CallbackQuery, plan_id: str, is_gift: 
     await call.answer()
 
 
-# ─── Lava payment ─────────────────────────────────────────────────────────────
+# ─── Platega payment ─────────────────────────────────────────────────────────────
 
-@router.callback_query(F.data.startswith("pay:lava:"))
-async def cb_pay_lava(call: CallbackQuery) -> None:
+@router.callback_query(F.data.startswith("pay:platega:"))
+async def cb_pay_platega(call: CallbackQuery) -> None:
     plan_id = call.data.split(":", 2)[2]
-    await _process_lava_payment(call, plan_id, is_gift=False)
+    await _process_platega_payment(call, plan_id, is_gift=False)
 
 
-@router.callback_query(F.data.startswith("giftpay:lava:"))
-async def cb_giftpay_lava(call: CallbackQuery) -> None:
+@router.callback_query(F.data.startswith("giftpay:platega:"))
+async def cb_giftpay_platega(call: CallbackQuery) -> None:
     plan_id = call.data.split(":", 2)[2]
-    await _process_lava_payment(call, plan_id, is_gift=True)
+    await _process_platega_payment(call, plan_id, is_gift=True)
 
 
-async def _process_lava_payment(call: CallbackQuery, plan_id: str, is_gift: bool) -> None:
-    shop_id = db_settings.get("lava_shop_id")
-    api_key = db_settings.get("lava_api_key")
+async def _process_platega_payment(call: CallbackQuery, plan_id: str, is_gift: bool) -> None:
+    shop_id = db_settings.get("platega_shop_id")
+    api_key = db_settings.get("platega_api_key")
     if not shop_id or not api_key:
-        await call.answer("Lava.ru не настроен", show_alert=True)
+        await call.answer("Platega.ru не настроен", show_alert=True)
         return
     plan = await get_plan_or_reissue(plan_id)
     if not plan:
         await call.answer("Тариф не найден", show_alert=True)
         return
     user_id = call.from_user.id
-    order_id = f"lava_{uuid.uuid4().hex[:8]}"
-    hook_url = settings.lava_webhook_url
+    order_id = f"platega_{uuid.uuid4().hex[:8]}"
+    hook_url = settings.platega_webhook_url
     success_url = f"https://t.me/{settings.bot_username}"
-    result = await lava.create_lava_invoice(
+    result = await platega.create_platega_invoice(
         shop_id=shop_id,
         api_key=api_key,
         amount=plan.price,
@@ -531,9 +531,9 @@ async def _process_lava_payment(call: CallbackQuery, plan_id: str, is_gift: bool
         success_url=success_url,
     )
     if not result:
-        await call.answer("Ошибка создания счёта Lava", show_alert=True)
+        await call.answer("Ошибка создания счёта Platega", show_alert=True)
         return
-    lava_id, pay_url = result
+    platega_id, pay_url = result
     await crud.create_invoice(
         user_id=user_id,
         plan_key=plan.id,
@@ -541,13 +541,13 @@ async def _process_lava_payment(call: CallbackQuery, plan_id: str, is_gift: bool
         days=plan.days,
         amount_rub=plan.price,
         currency="RUB",
-        gateway="lava",
+        gateway="platega",
         invoice_id=order_id,
         label=order_id,
         is_gift=is_gift,
     )
     await call.message.edit_text(
-        Texts.LAVA_INVOICE.format(title=plan.title, amount=f"{plan.price:.0f}"),
+        Texts.PLATEGA_INVOICE.format(title=plan.title, amount=f"{plan.price:.0f}"),
         reply_markup=invoice_kb(pay_url, order_id),
         parse_mode="HTML",
     )
@@ -607,12 +607,12 @@ async def cb_check(call: CallbackQuery, state: FSMContext) -> None:
     status = "active"
     if inv.gateway == "cryptopay":
         status = await cryptopay.get_crypto_invoice_status(invoice_id)
-    elif inv.gateway == "lava":
-        shop_id = db_settings.get("lava_shop_id")
-        api_key = db_settings.get("lava_api_key")
+    elif inv.gateway == "platega":
+        shop_id = db_settings.get("platega_shop_id")
+        api_key = db_settings.get("platega_api_key")
         if shop_id and api_key:
-            lava_status = await lava.get_lava_invoice_status(shop_id, api_key, invoice_id)
-            if lava_status == "success":
+            platega_status = await platega.get_platega_invoice_status(shop_id, api_key, invoice_id)
+            if platega_status == "success":
                 status = "paid"
     if status == "paid":
         await crud.update_invoice_status(invoice_id, "paid")
