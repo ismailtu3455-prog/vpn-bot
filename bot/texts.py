@@ -9,7 +9,7 @@ class Texts:
         "  • CryptoBot (USDT, TON, BTC)\n"
         "  • ⭐ Telegram Stars\n"
         "  • 💛 YooMoney (банковская карта)\n"
-        "  • 🟢 СБП через Lava.ru\n\n"
+        "  • 🟢 СБП через Platega.ru\n\n"
         "Выберите действие в меню ниже 👇"
     )
 
@@ -71,8 +71,8 @@ class Texts:
         "Если выдача не произошла, нажмите <b>«Я оплатил»</b> — заявка уйдёт на ручную проверку."
     )
 
-    LAVA_INVOICE = (
-        "🟢 <b>Оплата через СБП (Lava.ru)</b>\n\n"
+    PLATEGA_INVOICE = (
+        "🟢 <b>Оплата через СБП (Platega.ru)</b>\n\n"
         "📦 Тариф: <b>{title}</b>\n"
         "💰 Сумма: <b>{amount} ₽</b>\n\n"
         "👆 Нажмите кнопку ниже для оплаты через СБП.\n"

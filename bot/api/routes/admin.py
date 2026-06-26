@@ -448,7 +448,7 @@ SAFE_SETTINGS = {
     "stars_enabled", "test_enabled", "test_days", "default_limit_gb",
     "ref_reward_start", "ref_percent_lvl1", "ref_percent_lvl2",
     "balance_pay_enabled", "tome_enabled", "usdt_rate",
-    "yoomoney_wallet", "lava_shop_id", "tome_phone", "tome_bank",
+    "yoomoney_wallet", "platega_shop_id", "tome_phone", "tome_bank",
 }
 
 
@@ -460,7 +460,7 @@ async def admin_get_settings(_key: str = Depends(require_admin_key)):
             safe[k] = v
     safe["crypto_configured"] = bool(db_settings.get("crypto_pay_token") or settings.crypto_pay_token)
     safe["yoomoney_configured"] = bool(db_settings.get("yoomoney_wallet") and db_settings.get("yoomoney_secret"))
-    safe["lava_configured"] = bool(db_settings.get("lava_shop_id") and db_settings.get("lava_api_key"))
+    safe["platega_configured"] = bool(db_settings.get("platega_shop_id") and db_settings.get("platega_api_key"))
     return {"settings": safe, **safe}
 
 

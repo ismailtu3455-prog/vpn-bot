@@ -18,7 +18,7 @@ from bot.handlers import user, payments, admin
 
 # Background tasks
 from bot.api.server import start_api_server
-from bot.services import cryptopay, yoomoney, lava
+from bot.services import cryptopay, yoomoney, platega
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -66,7 +66,7 @@ async def check_payments_task(bot: Bot):
     while True:
         try:
             # Placeholder for actual payment checking logic (e.g. cryptopay active invoices)
-            # Webhooks are used for YooMoney and Lava, so periodic check is mainly for CryptoBot if webhooks aren't used.
+            # Webhooks are used for YooMoney and Platega, so periodic check is mainly for CryptoBot if webhooks aren't used.
             pass
         except Exception as e:
             logger.error(f"Error checking payments: {e}")

@@ -7,7 +7,7 @@ from typing import Optional
 from bot.database import crud
 from bot.services.delivery import deliver_vpn, deliver_gift
 from bot.config import settings, db_settings
-from bot.services import cryptopay, yoomoney, lava
+from bot.services import cryptopay, yoomoney, platega
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -147,15 +147,15 @@ async def create_checkout(body: CheckoutRequest, user = Depends(get_current_user
         )
         return {"ok": True, "redirect_url": pay_url}
 
-    elif body.gateway == "lava":
-        shop_id = db_settings.get("lava_shop_id")
-        api_key = db_settings.get("lava_api_key")
+    elif body.gateway == "platega":
+        shop_id = db_settings.get("platega_shop_id")
+        api_key = db_settings.get("platega_api_key")
         if not shop_id or not api_key:
-            raise HTTPException(status_code=500, detail="Lava is not configured")
-        invoice_id = f"lava_{uuid.uuid4().hex[:12]}"
-        hook_url = settings.lava_webhook_url
+            raise HTTPException(status_code=500, detail="Platega is not configured")
+        invoice_id = f"platega_{uuid.uuid4().hex[:12]}"
+        hook_url = settings.platega_webhook_url
         success_url = settings.dashboard_url + "?success=1"
-        result = await lava.create_lava_invoice(
+        result = await platega.create_platega_invoice(
             shop_id=shop_id,
             api_key=api_key,
             amount=price,
@@ -165,7 +165,7 @@ async def create_checkout(body: CheckoutRequest, user = Depends(get_current_user
             success_url=success_url,
         )
         if not result:
-            raise HTTPException(status_code=500, detail="Lava is unavailable")
+            raise HTTPException(status_code=500, detail="Platega is unavailable")
         _, pay_url = result
         await crud.create_invoice(
             user_id=user.user_id,
@@ -173,7 +173,7 @@ async def create_checkout(body: CheckoutRequest, user = Depends(get_current_user
             plan_title=plan.title,
             days=plan.days,
             amount_rub=price,
-            gateway="lava",
+            gateway="platega",
             invoice_id=invoice_id,
             label=invoice_id,
             is_gift=body.is_gift,

@@ -44,8 +44,8 @@ class Settings(BaseSettings):
     yoomoney_wallet: Optional[str] = None
     yoomoney_secret: Optional[str] = None
 
-    lava_shop_id: Optional[str] = None
-    lava_api_key: Optional[str] = None
+    platega_shop_id: Optional[str] = None
+    platega_api_key: Optional[str] = None
 
     resend_api_key: Optional[str] = None
     email_from: str = "Adoria VPN <noreply@adoria.fun>"
@@ -88,8 +88,8 @@ class Settings(BaseSettings):
         return f"{self.resolved_api_origin}/api/webhooks/yoomoney"
 
     @property
-    def lava_webhook_url(self) -> str:
-        return f"{self.resolved_api_origin}/api/webhooks/lava"
+    def platega_webhook_url(self) -> str:
+        return f"{self.resolved_api_origin}/api/webhooks/platega"
 
 
 settings = Settings()  # type: ignore[call-arg]
@@ -100,8 +100,8 @@ db_settings: dict[str, Any] = {
     "stars_enabled": "1",
     "yoomoney_wallet": None,
     "yoomoney_secret": None,
-    "lava_shop_id": None,
-    "lava_api_key": None,
+    "platega_shop_id": None,
+    "platega_api_key": None,
     # Referral settings
     "ref_reward_start": "50",
     "ref_percent_lvl1": "10",

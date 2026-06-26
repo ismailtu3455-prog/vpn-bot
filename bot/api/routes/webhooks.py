@@ -5,7 +5,7 @@ import logging
 from bot.database import crud
 from bot.services.delivery import deliver_vpn, deliver_gift
 from bot.config import db_settings, settings
-from bot.services import yoomoney, lava
+from bot.services import yoomoney, platega
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 logger = logging.getLogger(__name__)
@@ -84,18 +84,18 @@ async def yoomoney_webhook(request: Request):
     return {"status": "ok"}
 
 
-@router.post("/lava")
-async def lava_webhook(request: Request):
+@router.post("/platega")
+async def platega_webhook(request: Request):
     try:
         data = await request.json()
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid JSON")
         
-    api_key = db_settings.get("lava_api_key")
+    api_key = db_settings.get("platega_api_key")
     if not api_key:
-        raise HTTPException(status_code=400, detail="Lava not configured")
+        raise HTTPException(status_code=400, detail="Platega not configured")
         
-    if not lava.verify_lava_webhook(data, api_key):
+    if not platega.verify_platega_webhook(data, api_key):
         raise HTTPException(status_code=400, detail="Invalid signature")
         
     order_id = data.get("order_id")
