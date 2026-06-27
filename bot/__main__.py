@@ -100,9 +100,10 @@ async def main():
     dp.include_router(payments.router)
     dp.include_router(admin.router)
 
-    from bot.api.routes import user as api_user, admin as api_admin
+    from bot.api.routes import user as api_user, admin as api_admin, webhooks
     api_user.set_bot(bot)
     api_admin.set_bot(bot)
+    webhooks.set_bot(bot)
 
     await setup_bot_commands(bot)
 

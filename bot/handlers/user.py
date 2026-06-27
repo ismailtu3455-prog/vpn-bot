@@ -371,12 +371,14 @@ async def cb_pay_reissue_free(call: CallbackQuery) -> None:
                 await session.commit()
 
 
-async def _do_reissue(call: CallbackQuery | Message | None, user_id: int, old_name: str) -> bool:
+async def _do_reissue(call: CallbackQuery | Message | None, user_id: int, old_name: str, bot=None) -> bool:
     from bot.services import vpn as vpn_service
     if not old_name:
         if call is not None:
             target_message = call.message if isinstance(call, CallbackQuery) else call
             await target_message.answer("❌ VPN не найден.")
+        elif bot is not None:
+            await bot.send_message(user_id, "❌ VPN не найден.")
         return False
     try:
         await vpn_service.reissue_client_same_name(
@@ -388,21 +390,25 @@ async def _do_reissue(call: CallbackQuery | Message | None, user_id: int, old_na
         await crud.regenerate_sub_token(user_id)
         user = await crud.get_user(user_id)
         sub_url = f"https://{settings.subscription_domain}/sub/{user.sub_token}" if user else ""
+        text = (
+            f"✅ <b>Ключ переиздан!</b>\n\n"
+            f"🔑 Профиль: <code>{old_name}</code>\n"
+            f"🔗 Ссылка-подписка:\n<code>{sub_url}</code>"
+        )
         if call is not None:
-            text = (
-                f"✅ <b>Ключ переиздан!</b>\n\n"
-                f"🔑 Профиль: <code>{old_name}</code>\n"
-                f"🔗 Ссылка-подписка:\n<code>{sub_url}</code>"
-            )
             if isinstance(call, CallbackQuery):
                 await call.message.edit_text(text, reply_markup=back_kb("my"), parse_mode="HTML")
             else:
                 await call.answer(text, reply_markup=back_kb("my"), parse_mode="HTML")
+        elif bot is not None:
+            await bot.send_message(user_id, text, parse_mode="HTML")
         return True
     except Exception as e:
         if call is not None:
             target_message = call.message if isinstance(call, CallbackQuery) else call
             await target_message.answer(f"❌ Ошибка переиздания: {e}", reply_markup=back_kb("my"))
+        elif bot is not None:
+            await bot.send_message(user_id, f"❌ Ошибка переиздания: {e}")
         return False
     finally:
         if isinstance(call, CallbackQuery):

@@ -10,6 +10,12 @@ from bot.services import yoomoney, platega
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 logger = logging.getLogger(__name__)
 
+_bot = None
+
+def set_bot(bot) -> None:
+    global _bot
+    _bot = bot
+
 @router.post("/yoomoney")
 async def yoomoney_webhook(request: Request):
     data = await request.form()
@@ -61,19 +67,20 @@ async def yoomoney_webhook(request: Request):
                     target_invoice.user_id,
                     target_invoice.days,
                     recipient_email=recipient.email,
+                    bot=_bot,
                 )
                 if not success:
                     raise HTTPException(status_code=500, detail="Failed to deliver gift email")
             else:
-                await deliver_vpn(None, target_invoice.gift_for_user_id, target_invoice.days, is_gift=True)
+                await deliver_vpn(_bot, target_invoice.gift_for_user_id, target_invoice.days, is_gift=True)
         elif target_user_id:
             if target_invoice.plan_key == "reissue":
                 from bot.handlers.user import _do_reissue
                 u = await crud.get_user(target_user_id)
                 if u:
-                    await _do_reissue(None, target_user_id, u.vpn_name)
+                    await _do_reissue(None, target_user_id, u.vpn_name, bot=_bot)
             else:
-                await deliver_vpn(None, target_user_id, target_invoice.days, is_gift=target_invoice.is_gift)
+                await deliver_vpn(_bot, target_user_id, target_invoice.days, is_gift=target_invoice.is_gift)
             
         user = await crud.get_user(target_invoice.user_id)
         if user and user.ref_id:
@@ -118,19 +125,20 @@ async def platega_webhook(request: Request):
                     invoice.user_id,
                     invoice.days,
                     recipient_email=recipient.email,
+                    bot=_bot,
                 )
                 if not success:
                     raise HTTPException(status_code=500, detail="Failed to deliver gift email")
             else:
-                await deliver_vpn(None, invoice.gift_for_user_id, invoice.days, is_gift=True)
+                await deliver_vpn(_bot, invoice.gift_for_user_id, invoice.days, is_gift=True)
         elif target_user_id:
             if invoice.plan_key == "reissue":
                 from bot.handlers.user import _do_reissue
                 u = await crud.get_user(target_user_id)
                 if u:
-                    await _do_reissue(None, target_user_id, u.vpn_name)
+                    await _do_reissue(None, target_user_id, u.vpn_name, bot=_bot)
             else:
-                await deliver_vpn(None, target_user_id, invoice.days, is_gift=invoice.is_gift)
+                await deliver_vpn(_bot, target_user_id, invoice.days, is_gift=invoice.is_gift)
             
         user = await crud.get_user(invoice.user_id)
         if user and user.ref_id:
@@ -189,19 +197,20 @@ async def cryptopay_webhook(request: Request):
                         invoice.user_id,
                         invoice.days,
                         recipient_email=recipient.email,
+                        bot=_bot,
                     )
                     if not success:
                         raise HTTPException(status_code=500, detail="Failed to deliver gift email")
                 else:
-                    await deliver_vpn(None, invoice.gift_for_user_id, invoice.days, is_gift=True)
+                    await deliver_vpn(_bot, invoice.gift_for_user_id, invoice.days, is_gift=True)
             elif target_user_id:
                 if invoice.plan_key == "reissue":
                     from bot.handlers.user import _do_reissue
                     u = await crud.get_user(target_user_id)
                     if u:
-                        await _do_reissue(None, target_user_id, u.vpn_name)
+                        await _do_reissue(None, target_user_id, u.vpn_name, bot=_bot)
                 else:
-                    await deliver_vpn(None, target_user_id, invoice.days, is_gift=invoice.is_gift)
+                    await deliver_vpn(_bot, target_user_id, invoice.days, is_gift=invoice.is_gift)
                 
             user = await crud.get_user(invoice.user_id)
             if user and user.ref_id:
