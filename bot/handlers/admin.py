@@ -943,11 +943,20 @@ async def adm_inv_approve_by_ext(call: CallbackQuery) -> None:
         else:
             success = await deliver_vpn(call.bot, inv.gift_for_user_id, inv.days, is_gift=True)
     else:
-        success = await deliver_vpn(call.bot, recipient_id, inv.days, is_gift=inv.is_gift)
+        if inv.plan_key == "reissue":
+            from bot.handlers.user import _do_reissue
+            recipient = await crud.get_user(recipient_id)
+            if recipient:
+                success = await _do_reissue(None, recipient_id, recipient.vpn_name, bot=call.bot)
+            else:
+                success = False
+        else:
+            success = await deliver_vpn(call.bot, recipient_id, inv.days, is_gift=inv.is_gift)
+    
     if success:
         await call.message.edit_text(
             f"✅ Счёт {invoice_id} подтверждён.\n"
-            f"{'Подарочная ссылка отправлена покупателю.' if inv.is_gift else f'VPN выдан пользователю {recipient_id}.'}",
+            f"{'Подарочная ссылка отправлена покупателю.' if inv.is_gift else f'VPN выдан/перевыпущен пользователю {recipient_id}.'}",
             parse_mode="HTML",
         )
         await call.answer("Платёж подтверждён")
