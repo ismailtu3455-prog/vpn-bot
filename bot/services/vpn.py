@@ -35,7 +35,7 @@ _SERVERS: list[dict] = [
     # },
     {
         "name": "germany",
-        "base_url": "http://193.23.199.80:25526/yajbXwxoIMl3M4P3",
+        "base_url": "http://89.40.14.209:25051/cfr5GEAOb8JhteN4",
         "api_token": "b3BCOZ6zlLxbJJ8a4znQMYV4819r1T3HuchUs5T5zShgFE5y",
         "inbound_ids": [1, 2, 3],  # active: vless TCP Reality + hysteria + vless XHTTP Reality
         "ssl_verify": False,
