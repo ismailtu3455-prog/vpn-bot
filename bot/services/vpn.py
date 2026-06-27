@@ -34,10 +34,10 @@ _SERVERS: list[dict] = [
     #     "ssl_verify": False,
     # },
     {
-        "name": "germany",
+        "name": "litva",
         "base_url": "http://89.40.14.209:25051/cfr5GEAOb8JhteN4",
         "api_token": "b3BCOZ6zlLxbJJ8a4znQMYV4819r1T3HuchUs5T5zShgFE5y",
-        "inbound_ids": [1, 2, 3],  # active: vless TCP Reality + hysteria + vless XHTTP Reality
+        "inbound_ids": [1],  # active: vless TCP Reality
         "ssl_verify": False,
     },
 ]
