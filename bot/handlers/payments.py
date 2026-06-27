@@ -518,7 +518,7 @@ async def _process_platega_payment(call: CallbackQuery, plan_id: str, is_gift: b
         await call.answer("Тариф не найден", show_alert=True)
         return
     user_id = call.from_user.id
-    order_id = f"platega_{uuid.uuid4().hex[:8]}"
+    order_id = str(uuid.uuid4())
     hook_url = settings.platega_webhook_url
     success_url = f"https://t.me/{settings.bot_username}"
     result = await platega.create_platega_invoice(

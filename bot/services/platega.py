@@ -17,10 +17,10 @@ async def create_platega_invoice(
         async with PlategaAsyncClient(merchant_id=shop_id, secret=api_key) as client:
             payload = CreateTransactionRequest(
                 id=order_id,
-                payment_method=2, # 2 = СБП (QR-код)
-                payment_details=PaymentDetails(amount=int(amount), currency="RUB"),
+                paymentMethod=2,
+                paymentDetails=PaymentDetails(amount=int(amount), currency="RUB"),
                 description=description,
-                return_url=success_url if success_url else None
+                returnUrl=success_url if success_url else None
             )
             response = await client.create_transaction(payload=payload)
             return response.transaction_id, response.redirect
