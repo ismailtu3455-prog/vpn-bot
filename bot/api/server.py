@@ -9,7 +9,7 @@ app = FastAPI(title="Adoria VPN API", version="2.0.0")
 
 allowed_origins = {
     settings.site_origin,
-    "https://cloudv.adoria.fun",
+    "https://cloud.adoria.fun",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
