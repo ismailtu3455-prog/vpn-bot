@@ -511,7 +511,7 @@ async def _process_platega_payment(call: CallbackQuery, plan_id: str, is_gift: b
     shop_id = db_settings.get("platega_shop_id")
     api_key = db_settings.get("platega_api_key")
     if not shop_id or not api_key:
-        await call.answer("Platega.ru не настроен", show_alert=True)
+        await call.answer("Platega.io не настроена", show_alert=True)
         return
     plan = await get_plan_or_reissue(plan_id)
     if not plan:
