@@ -45,7 +45,7 @@ async def get_platega_invoice_status(
         async with PlategaAsyncClient(merchant_id=shop_id, secret=api_key) as client:
             resp = await client.get_transaction_status(transaction_id=order_id)
             status = resp.status.lower()
-            if status in ("success", "paid", "completed", "approved"):
+            if status in ("success", "paid", "completed", "approved", "confirmed"):
                 return "success"
             if status in ("error", "failed", "cancelled", "declined"):
                 return "error"

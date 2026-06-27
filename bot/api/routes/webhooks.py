@@ -98,10 +98,10 @@ async def platega_webhook(request: Request):
     if not platega.verify_platega_webhook(data, api_key):
         raise HTTPException(status_code=400, detail="Invalid signature")
         
-    order_id = data.get("order_id")
-    status = data.get("status")
+    order_id = data.get("id") or data.get("transactionId") or data.get("order_id")
+    status = data.get("status", "").upper()
     
-    if not order_id or status != "success":
+    if not order_id or status != "CONFIRMED":
         return {"status": "ok"}
         
     invoice = await crud.get_invoice(order_id)
