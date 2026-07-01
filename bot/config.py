@@ -52,7 +52,7 @@ class Settings(BaseSettings):
 
     api_port: int = 8888
     api_origin: Optional[str] = None
-    api_secret: str = "change-this-secret-key-in-production"
+    api_secret: str
     site_domain: str = "cloud.adoria.fun"
     subscription_domain: str = "cloud.adoria.fun"
     bot_username: str = "Adoria_funbot"

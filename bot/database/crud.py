@@ -181,14 +181,19 @@ async def register_user(
                 sub_token=generate_sub_token(),
             )
             session.add(user)
+            import sqlalchemy.exc
             while True:
                 try:
                     await session.commit()
                     break
-                except Exception:
+                except sqlalchemy.exc.IntegrityError:
                     await session.rollback()
                     user.sub_token = generate_sub_token()
                     session.add(user)
+                except Exception as e:
+                    await session.rollback()
+                    logger.error(f"Failed to register user {user_id}: {e}")
+                    raise
             await session.refresh(user)
         else:
             # Update dynamic fields
@@ -804,7 +809,7 @@ async def create_email_verification(email: str, code: str, user_id: int | None, 
         session.add(ev)
         await session.commit()
 
-async def verify_email_code(email: str, code: str) -> int | None:
+async def verify_email_code(email: str, code: str) -> bool:
     from datetime import datetime
     async with AsyncSessionLocal() as session:
         result = await session.execute(
@@ -817,8 +822,8 @@ async def verify_email_code(email: str, code: str) -> int | None:
         if ev and ev.expires_at > datetime.utcnow():
             await session.delete(ev)
             await session.commit()
-            return ev.user_id
-        return None
+            return True
+        return False
 
 # ─── OTP ─────────────────────────────────────────────────────────────────────
 

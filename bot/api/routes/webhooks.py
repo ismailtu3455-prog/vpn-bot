@@ -111,6 +111,12 @@ async def platega_webhook(request: Request):
     if not order_id or status != "CONFIRMED":
         return {"status": "ok"}
         
+    shop_id = db_settings.get("platega_shop_id")
+    actual_status = await platega.get_platega_invoice_status(shop_id, api_key, order_id)
+    if actual_status != "success":
+        logger.warning(f"Platega webhook forged or invalid! order_id={order_id}, actual_status={actual_status}")
+        raise HTTPException(status_code=400, detail="Forged webhook")
+        
     invoice = await crud.get_invoice(order_id)
     if invoice and invoice.status == "active":
         if invoice.is_gift and not invoice.gift_for_user_id:

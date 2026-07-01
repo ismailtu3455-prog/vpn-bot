@@ -117,34 +117,10 @@ class EmailVerifyBody(BaseModel):
 async def request_email_code(body: EmailRequestBody):
     email = body.email.strip().lower()
     user = await crud.get_user_by_email(email)
-    if not user:
-        import random
-        # Создаем нового пользователя с виртуальным ID (10-12 цифр, чтобы не конфликтовать с Telegram)
-        new_user_id = random.randint(10000000000, 99999999999)
-        username = email.split('@')[0]
-        
-        ref_id = None
-        if body.ref:
-            # ref can be B<id> or P<id> or just <id>
-            try:
-                # Remove B or P prefix if it exists
-                clean_ref = body.ref[1:] if body.ref.startswith(('B', 'P', 'b', 'p')) else body.ref
-                ref_id = int(clean_ref)
-            except ValueError:
-                pass
-
-        await crud.register_user(
-            user_id=new_user_id,
-            username=username,
-            first_name="Web",
-            last_name="User",
-            ref_id=ref_id
-        )
-        await crud.set_user_email(new_user_id, email)
-        user = await crud.get_user(new_user_id)
+    user_id = user.user_id if user else None
         
     code = generate_otp()
-    await crud.create_email_verification(email, code, user.user_id, expires_in_seconds=300)
+    await crud.create_email_verification(email, code, user_id, expires_in_seconds=300)
     
     from bot.services.email import send_verification_email
     success = await send_verification_email(email, code)
@@ -159,9 +135,26 @@ async def verify_email_code_route(body: EmailVerifyBody):
     email = body.email.strip().lower()
     code = body.code.strip()
     
-    user_id = await crud.verify_email_code(email, code)
-    if not user_id:
+    verified_user_id = await crud.verify_email_code(email, code)
+    if verified_user_id is False:
         raise HTTPException(status_code=401, detail="Неверный или просроченный код")
+        
+    user = await crud.get_user_by_email(email)
+    if not user:
+        import secrets
+        new_user_id = secrets.randbelow(89999999999) + 10000000000
+        username = email.split('@')[0]
+        
+        await crud.register_user(
+            user_id=new_user_id,
+            username=username,
+            first_name="Web",
+            last_name="User",
+        )
+        await crud.set_user_email(new_user_id, email)
+        user_id = new_user_id
+    else:
+        user_id = user.user_id
         
     token = create_access_token(
         data={"sub": str(user_id)},
